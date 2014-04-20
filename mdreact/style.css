@@ -19,6 +19,10 @@ body {
     box-shadow: 0 0 3px #CCC;
 }
 
+.links {
+    font-size: 10pt;
+}
+
 .editor {
     position: absolute;
     width: 45%;
