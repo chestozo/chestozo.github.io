@@ -1,4 +1,15 @@
 /** @jsx React.DOM */
+
+var key = 'source' + location.search;
+
+var converter = new Showdown.converter();
+
+var save = function(val) {
+    setTimeout(function() {
+        localStorage.setItem(key, val);
+    }, 0);
+};
+
 var Editor = React.createClass({
     getInitialState: function() {
         return { source: this.props.value || '' };
@@ -22,15 +33,9 @@ var Editor = React.createClass({
     }
 });
 
-var converter = new Showdown.converter();
-var save = function(val) {
-    setTimeout(function() {
-        localStorage.setItem('source', val);
-    }, 0);
-};
 
 React.renderComponent(
-    <Editor md={ converter } value={ localStorage.getItem('source') || '' } save={ save }/>,
+    <Editor md={ converter } value={ localStorage.getItem(key) || '' } save={ save }/>,
     document.querySelector('#editor'),
     function() {
         this.focusOnEditor();
