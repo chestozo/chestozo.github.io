@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Страница Node.js v0.10.17 Manual &amp; Documentation</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/sh.css">
+  <link rel="canonical" href="http://nodejs.org/api/entities.md.html">
+</head>
+<body class="alt apidoc" id="api-section-entities.md">
+    <div id="intro" class="interior">
+        <a href="/" title="Go back to the home page">
+            <img id="logo" src="http://nodejs.org/images/logo-light.png" alt="node.js">
+        </a>
+    </div>
+    <div id="content" class="clearfix">
+        <div id="column2" class="interior">
+            <ul>
+                <li><a href="/" class="home">Home</a></li>
+                <li><a href="/download/" class="download">Download</a></li>
+                <li><a href="/about/" class="about">About</a></li>
+                <li><a href="http://npmjs.org/" class="npm">npm Registry</a></li>
+                <li><a href="http://nodejs.org/api/" class="docs current">Docs</a></li>
+                <li><a href="http://blog.nodejs.org" class="blog">Blog</a></li>
+                <li><a href="/community/" class="community">Community</a></li>
+                <li><a href="/logos/" class="logos">Logos</a></li>
+                <li><a href="http://jobs.nodejs.org/" class="jobs">Jobs</a></li>
+            </ul>
+            <p class="twitter"><a href="http://twitter.com/nodejs">@nodejs</a></p>
+        </div>
+
+        <div id="column1" class="interior">
+          <header>
+            <h1>Node.js v0.10.17 Manual &amp; Documentation</h1>
+            <div id="gtoc">
+              <p>
+                <a href="index.html" name="toc">Index</a> |
+                <a href="all.html">View on single page</a> |
+                <a href="entities.md.json">View as JSON</a>
+              </p>
+            </div>
+            <hr>
+          </header>
+
+          <div id="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+<li><a href="#entities_md">Страница</a><ul>
+<li><a href="#entities_md_1">Адрес страницы</a></li>
+</ul>
+</li>
+<li><a href="#entities_md_2">Ключевые сущности</a><ul>
+<li><a href="#entities_md_3">Параметры страницы</a></li>
+<li><a href="#entities_md_4">Маршрутизатор</a></li>
+<li><a href="#entities_md_5">Модель</a></li>
+<li><a href="#entities_md_6">Вид</a></li>
+<li><a href="#entities_md_7">Раскладка страницы</a></li>
+<li><a href="#entities_md_8">Контроллер обновления</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+
+          <div id="apicontent">
+            <h1>Страница<span><a class="mark" href="#entities_md" id="entities_md">#</a></span></h1>
+<p>Noscript служит для создания одностраничных приложений. Поэтому <code>Страница</code> в контексте noscript - это то же самое, что и приложение. В приложении может быть неограниченное количество логических страниц, но все они будут показываться в рамках одного физического html-документа. Он и есть <code>Страница</code>. В noscript страница представлена объектом <code>ns.page</code>.
+
+</p>
+<h2>Адрес страницы<span><a class="mark" href="#entities_md_1" id="entities_md_1">#</a></span></h2>
+<p>Основное состояние страницы определяется <code>Адресом страницы</code> (url). Он определяет то состояние, которое должно быть показано при загрузке/перезагрузке страницы.
+Основное состояние может определяться следующими атрибутами:
+ - идентификатор логической страницы (раздел сайта)
+ - идентификатор сущности, оторбражаемой в приложении (id фотки, id файла)
+ - атрибут состояния интерфейса, который хочется иметь возможность задавать извне (идентификатор открытого диалога)
+Адрес страницы служит её <code>внешним API</code>.
+
+</p>
+<h1>Ключевые сущности<span><a class="mark" href="#entities_md_2" id="entities_md_2">#</a></span></h1>
+<h2>Параметры страницы<span><a class="mark" href="#entities_md_3" id="entities_md_3">#</a></span></h2>
+<p><code>Параметры страницы</code> (ns.page.params) - это параметры, получаемые из адреса страницы. ЧПУ преобразуется в объект, с которым в дальнейшем работают сущности приложения.
+
+</p>
+<h2>Маршрутизатор<span><a class="mark" href="#entities_md_4" id="entities_md_4">#</a></span></h2>
+<p>Для преобразования адреса в параметры используется <code>маршрутизатор</code> (ns.router). Кроме параметров маршрутизатор так же возвращает идентификатор раскладки страницы (ns.layout).
+
+</p>
+<h2>Модель<span><a class="mark" href="#entities_md_5" id="entities_md_5">#</a></span></h2>
+<p><code>Модель</code> - это элемент данных. Все данные, которые говорит и показывает интерфейс, должны быть представлены моделями. Модель может быть как клиентским представлением данных на сервере, так и локальным элементом данных, относящихся только к интерфейсу (модели состояний интерфейса).
+
+</p>
+<p>Для работы с данными сначала декларируются прототипы моделей (ns.Model.define).
+Затем создаются конкретные экземпляры модели. Уникальным идентификатором экземпляра модели является свойство <code>key</code>. Свойство <code>id</code> у экземпляра модели указывает на прототип модели.
+
+</p>
+<p>Ключ модели <code>key</code> строится на основе параметров, указанных в декларации модели. К ключам стоит относиться как к хешам. Попытка парсинга ключа - это дорога в ад.
+
+</p>
+<h2>Вид<span><a class="mark" href="#entities_md_6" id="entities_md_6">#</a></span></h2>
+<p><code>Вид</code> - это элемент интерфейса, из видов состоит страница. Вид может отображать статическое содержимое, значения параметров страницы, или данные моделей. Вид состоит из декларации и шаблона. Декларация содержит
+ - <code>id</code> вида, определяющий прототип
+ - модели, от которых зависит вид
+ - параметры страницы, от которых зависит вид.
+
+</p>
+<p>Экземпляры видов идентифицируются атрибутом <code>key</code>. Ключ вида строится на основании параметров моделей, от которых зависит вид, и параметров, указанных в декларации вида.
+
+</p>
+<p>Экземпляры видов создаются только автоматически в результате работы контроллера обновления (ns.Updater)
+Виды могут быть вложенны друг в друга. На странице всегда существует <code>корневой вид</code>, внутри которого находятся остальные виды приложения.
+Существуют специальные виды: бокс, асинхронный вид, вид-коллексия.
+Шаблон вида может иметь различную структуру в зависимости от используемого шаблонизатора. В комплекте с noscript идёт набор .yate шаблонов, задающих определённую структуру.
+Так же есть ряд нюансов, которые нужно учитывать при написании собственных шаблонов.
+
+</p>
+<h2>Раскладка страницы<span><a class="mark" href="#entities_md_7" id="entities_md_7">#</a></span></h2>
+<p><code>Раскладка страницы</code> (layout) - это декларация, по которой в зависимости от параметров определяется структура видов. Приложение может иметь несколько раскладок. Раскладка выбирается по идентификатору раскладки, который возвращается маршрутизатором.
+Раскладка представляет собой древовидный json-объект. Каждый узел дерева соответствует виду. В ключе объекта - идентификатор прототипа вида. В значении объекта - вложенные виды. Единственный вложенный вид может быть задан строкой. Более сложная структура может быть задана объектом. Структура, зависящая от каких-то условий может быть задана функцией, которая возвращает одну из перечисленных структур. Чтобы определить вид без вложенностей, значение нужно установить в true.
+
+</p>
+<h2>Контроллер обновления<span><a class="mark" href="#entities_md_8" id="entities_md_8">#</a></span></h2>
+<p><code>Контроллер обновления</code> (ns.Updater) - объект, реализующий логику построения и обновления страницы.
+</p>
+
+          </div>
+        </div>
+    </div>
+    <div id="footer">
+        <a href="http://joyent.com" class="joyent-logo">Joyent</a>
+        <ul class="clearfix">
+            <li><a href="/">Node.js</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/about/">About</a></li>
+            <li><a href="http://npmjs.org/">npm Registry</a></li>
+            <li><a href="http://nodejs.org/api/">Docs</a></li>
+            <li><a href="http://blog.nodejs.org">Blog</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/logos/">Logos</a></li>
+            <li><a href="http://jobs.nodejs.org/">Jobs</a></li>
+            <li><a href="http://twitter.com/nodejs" class="twitter">@nodejs</a></li>
+        </ul>
+
+        <p>Copyright <a href="http://joyent.com/">Joyent, Inc</a>, Node.js is a <a href="/trademark-policy.pdf">trademark</a> of Joyent, Inc. View <a href="https://raw.github.com/joyent/node/v0.10.17/LICENSE">license</a>.</p>
+    </div>
+
+  <script src="../sh_main.js"></script>
+  <script src="../sh_javascript.min.js"></script>
+  <script>highlight(undefined, undefined, 'pre');</script>
+  <script>
+    window._gaq = [['_setAccount', 'UA-10874194-2'], ['_trackPageview']];
+    (function(d, t) {
+      var g = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      g.src = '//www.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g, s);
+    }(document, 'script'));
+  </script>
+</body>
+</html>
+

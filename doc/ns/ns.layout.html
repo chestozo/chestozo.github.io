@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Раскладка страницы (ns.Layout) Node.js v0.10.17 Manual &amp; Documentation</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/sh.css">
+  <link rel="canonical" href="http://nodejs.org/api/ns.layout.md.html">
+</head>
+<body class="alt apidoc" id="api-section-ns.layout.md">
+    <div id="intro" class="interior">
+        <a href="/" title="Go back to the home page">
+            <img id="logo" src="http://nodejs.org/images/logo-light.png" alt="node.js">
+        </a>
+    </div>
+    <div id="content" class="clearfix">
+        <div id="column2" class="interior">
+            <ul>
+                <li><a href="/" class="home">Home</a></li>
+                <li><a href="/download/" class="download">Download</a></li>
+                <li><a href="/about/" class="about">About</a></li>
+                <li><a href="http://npmjs.org/" class="npm">npm Registry</a></li>
+                <li><a href="http://nodejs.org/api/" class="docs current">Docs</a></li>
+                <li><a href="http://blog.nodejs.org" class="blog">Blog</a></li>
+                <li><a href="/community/" class="community">Community</a></li>
+                <li><a href="/logos/" class="logos">Logos</a></li>
+                <li><a href="http://jobs.nodejs.org/" class="jobs">Jobs</a></li>
+            </ul>
+            <p class="twitter"><a href="http://twitter.com/nodejs">@nodejs</a></p>
+        </div>
+
+        <div id="column1" class="interior">
+          <header>
+            <h1>Node.js v0.10.17 Manual &amp; Documentation</h1>
+            <div id="gtoc">
+              <p>
+                <a href="index.html" name="toc">Index</a> |
+                <a href="all.html">View on single page</a> |
+                <a href="ns.layout.md.json">View as JSON</a>
+              </p>
+            </div>
+            <hr>
+          </header>
+
+          <div id="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+<li><a href="#ns_layout_md_ns_layout">Раскладка страницы (ns.Layout)</a><ul>
+<li><a href="#ns_layout_md">Бокс</a></li>
+<li><a href="#ns_layout_md_1">Асинхронные виды</a></li>
+</ul>
+</li>
+<li><a href="#ns_layout_md_2">Наследование</a></li>
+</ul>
+
+          </div>
+
+          <div id="apicontent">
+            <h1>Раскладка страницы (ns.Layout)<span><a class="mark" href="#ns_layout_md_ns_layout" id="ns_layout_md_ns_layout">#</a></span></h1>
+<p>Раскладка служит для декларативного описания структуры видов на странице. При определении раскладки указывается её id и декларация.
+
+</p>
+<pre><code>    ns.layout.define(&#39;main&#39;, {
+        app: {
+            view1: true,
+            view2: {
+                view21: true
+            }
+        }
+    });</code></pre>
+<p>В примере создаётся раскладка страницы, состоящей из четырёх видов. Корневой вид <code>app</code> содержит в себе <code>view1</code> и <code>view2</code>, а <code>view2</code> содержит в себе <code>view21</code>.
+
+</p>
+<p>Каждый узел декларации соответствует виду. Ключ указывает на класс вида, в значении содержится декларация вложенных видов.
+
+</p>
+<p>Способы описания структуры видов
+
+</p>
+<pre><code>    ns.layout.define(&#39;main&#39;, {
+        app: {
+
+            // Для описания вида без вложенностей значение устанавливается в true
+            view1: true,
+
+            // Для описания одного вложенного вида в значении указывается его класс
+            view2: &#39;view21&#39;,
+
+            // Для описания статической структуры видов используется объект
+            view3: {
+                view31: true,
+                view32: &#39;view321&#39;
+            },
+            // Для описания динамической структуры видов узел объяляется боксом,
+            // а вложенность задаётся функцией.
+            // В params приходят параметры страницы.
+            // Функция может вернуть любой из выше перечисленных форматов декларации
+            // видов, или falsy, чтобы отменить добавление вида в страницу.
+            view4@: function(params) {
+                if (params.value1) {
+                    return null;
+                }
+                if (params.value2) {
+                    return &#39;view41&#39;;
+                }
+                if (params.value3) {
+                    return {
+                        &#39;view42&#39;: {
+                            &#39;view421&#39;: true;
+                        }
+                    };
+                }
+            }
+        }
+    });</code></pre>
+<p>Кроме описания структуры видов раскладка так же позволяет декларировать специальные атрибуты видов.
+
+</p>
+<h2>Бокс<span><a class="mark" href="#ns_layout_md" id="ns_layout_md">#</a></span></h2>
+<p>Бокс - это специальный вид-контейнер. Он не имеет собственного html-содержимого и представлен в DOM только одним узлом, содержащим непосредственно в себе все вложенности. Бокс позволяет решать следующие задачи.
+
+
+</p>
+<p>Кеширование экземпляров вида
+
+</p>
+<pre><code>    ns.layout.define(&#39;main&#39;, {
+        app: {
+            box@: &#39;view1&#39;
+        }
+    });</code></pre>
+<p>В примере <code>box</code> будет содержать один вложенный вид <code>view1</code>. Если <code>view1</code> зависит от параметров, то при изменении параметров предыдущие html-узлы будут скрываться, но оставаться в DOM-дереве, а новые - добавляться в <code>box</code> и показываться. При возврате к одному из предыдущих наборов параметров будет показан ранее сгенерированный соответствующий ему html-узел.
+
+
+</p>
+<p>Создание динамической раскладки
+
+</p>
+<pre><code>    ns.layout.define(&#39;main&#39;, {
+        app: {
+            view1: true,
+            view2@: function(params) {
+                if (params.value1) {
+                    return null;
+                }
+                if (params.value2) {
+                    return &#39;view41&#39;;
+                }
+                if (params.value3) {
+                    return {
+                        &#39;view42&#39;: &#39;view421&#39;,
+                        &#39;view43&#39;: &#39;view431&#39;
+                    };
+                }
+            }
+        }
+    });</code></pre>
+<p>В примере вид в зависимости от параметров может отсутствовать, содержать единственный вид <code>view41</code>, или содержать <code>view42</code> и <code>view43</code>, содержащие в свою очередь соответственно <code>view421</code> и <code>view431</code>. Для создания такой структуры <code>view2</code> обязательно должен быть боксом. Обычный view, содержащий вложенные виды, при их исчезновении после обновления может работать некорректно.
+
+</p>
+<h2>Асинхронные виды<span><a class="mark" href="#ns_layout_md_1" id="ns_layout_md_1">#</a></span></h2>
+<p>Асинхронный вид позволяет на время загрузки его моделей рисовать его в виде заглушки. Updater запросит модели асинхронных видов отдельными запросами и отрисует страницу до получения этих данных. Загрузив модели, Updater сделает повторный проход только по асинхронным видам и обновит их.
+
+</p>
+<pre><code>    ns.layout.define(&#39;main&#39;, {
+        app: {
+            viewLight: true,
+            viewHard&amp;: true
+        }
+    });</code></pre>
+<pre><code>    ns.View.define(&#39;viewLight&#39;, {
+        models: [&#39;modelLight&#39;]
+    })
+    ns.View.define(&#39;viewHard&#39;, {
+        models: [&#39;modelHard&#39;]
+    })</code></pre>
+<pre><code>    match .view[id=&quot;viewLight&quot;] ns-view {
+        // основное html-содержимое вида viewLight
+    }
+
+
+    match .view[id=&quot;viewHard&quot;] ns-view-async {
+        // html-содержимое заглушки для вида viewHard
+    }
+    match .view[id=&quot;viewHard&quot;] ns-view {
+        // основное html-содержимое вида viewHard
+    }</code></pre>
+<p>Предположим, что modelLight запросить легко, а запрос modelHard требует заметного времени. При обновлении Updater запросит модели отдельно: сначала modelLight, а затем modelHard. Получив данные для modelLight, Updater отрисует страницу. Вид viewHard при этом отрисуется в виде заглушки (с использованием шаблона ns-view-async). После получения данных для modelHard Updater сделает ещё один такт обновления и вместо заглушки отрисует основное содержимое viewHard.
+
+</p>
+<h1>Наследование<span><a class="mark" href="#ns_layout_md_2" id="ns_layout_md_2">#</a></span></h1>
+<p>Один layout может наследовать от другого. Наследование реализуется следующим образом
+
+</p>
+<pre><code class="js">// объявляет общий layout для всех страниц
+ns.layout.define(&#39;common&#39;, {
+    &#39;app&#39;: {
+        // каждая страница в проекте состоит из шапки, левой колонки и правой колонки
+        &#39;header-box@&#39;: {},
+        &#39;left-box@&#39;: {},
+        &#39;right-box@&#39;: {},
+    }
+});
+
+// страница 1
+// обратите внимание, что header-box@ не доопределяелся и берется как есть из common
+ns.layout.define(&#39;posts&#39;, {
+    // чтобы заново не описывать структуру, путь до видов указывается через пробел
+    &#39;app left-box@&#39;: {
+        &#39;navigation&#39;: {}
+    },
+    &#39;app right-box@&#39;: {
+        &#39;posts&#39;: {}
+    }
+// последним параметром для ns.layout.define указывает, что layout наследуется от common
+}, &#39;common&#39;);
+
+// страница 2
+ns.layout.define(&#39;profile&#39;, {
+    &#39;app header-box@&#39;: {
+        &#39;user-header&#39;: {}
+    },
+    &#39;app left-box@&#39;: {
+        &#39;navigation&#39;: {}
+    },
+    &#39;app right-box@&#39;: {
+        &#39;profile&#39;: {}
+    }
+}, &#39;common&#39;);</code></pre>
+
+          </div>
+        </div>
+    </div>
+    <div id="footer">
+        <a href="http://joyent.com" class="joyent-logo">Joyent</a>
+        <ul class="clearfix">
+            <li><a href="/">Node.js</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/about/">About</a></li>
+            <li><a href="http://npmjs.org/">npm Registry</a></li>
+            <li><a href="http://nodejs.org/api/">Docs</a></li>
+            <li><a href="http://blog.nodejs.org">Blog</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/logos/">Logos</a></li>
+            <li><a href="http://jobs.nodejs.org/">Jobs</a></li>
+            <li><a href="http://twitter.com/nodejs" class="twitter">@nodejs</a></li>
+        </ul>
+
+        <p>Copyright <a href="http://joyent.com/">Joyent, Inc</a>, Node.js is a <a href="/trademark-policy.pdf">trademark</a> of Joyent, Inc. View <a href="https://raw.github.com/joyent/node/v0.10.17/LICENSE">license</a>.</p>
+    </div>
+
+  <script src="../sh_main.js"></script>
+  <script src="../sh_javascript.min.js"></script>
+  <script>highlight(undefined, undefined, 'pre');</script>
+  <script>
+    window._gaq = [['_setAccount', 'UA-10874194-2'], ['_trackPageview']];
+    (function(d, t) {
+      var g = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      g.src = '//www.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g, s);
+    }(document, 'script'));
+  </script>
+</body>
+</html>
+

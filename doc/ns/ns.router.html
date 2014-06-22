@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ns.router Node.js v0.10.17 Manual &amp; Documentation</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/sh.css">
+  <link rel="canonical" href="http://nodejs.org/api/ns.router.md.html">
+</head>
+<body class="alt apidoc" id="api-section-ns.router.md">
+    <div id="intro" class="interior">
+        <a href="/" title="Go back to the home page">
+            <img id="logo" src="http://nodejs.org/images/logo-light.png" alt="node.js">
+        </a>
+    </div>
+    <div id="content" class="clearfix">
+        <div id="column2" class="interior">
+            <ul>
+                <li><a href="/" class="home">Home</a></li>
+                <li><a href="/download/" class="download">Download</a></li>
+                <li><a href="/about/" class="about">About</a></li>
+                <li><a href="http://npmjs.org/" class="npm">npm Registry</a></li>
+                <li><a href="http://nodejs.org/api/" class="docs current">Docs</a></li>
+                <li><a href="http://blog.nodejs.org" class="blog">Blog</a></li>
+                <li><a href="/community/" class="community">Community</a></li>
+                <li><a href="/logos/" class="logos">Logos</a></li>
+                <li><a href="http://jobs.nodejs.org/" class="jobs">Jobs</a></li>
+            </ul>
+            <p class="twitter"><a href="http://twitter.com/nodejs">@nodejs</a></p>
+        </div>
+
+        <div id="column1" class="interior">
+          <header>
+            <h1>Node.js v0.10.17 Manual &amp; Documentation</h1>
+            <div id="gtoc">
+              <p>
+                <a href="index.html" name="toc">Index</a> |
+                <a href="all.html">View on single page</a> |
+                <a href="ns.router.md.json">View as JSON</a>
+              </p>
+            </div>
+            <hr>
+          </header>
+
+          <div id="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+<li><a href="#ns_router_md_ns_router">ns.router</a><ul>
+<li><a href="#ns_router_md_api">API</a><ul>
+<li><a href="#ns_router_md_ns_router_basedir_string"><code>ns.router.baseDir</code>: <code>{string}</code></a></li>
+<li><a href="#ns_router_md_ns_router_url_page_string_params_object"><code>ns.router(url)</code>: <code>{ page:string, params:{object} }</code></a></li>
+<li><a href="#ns_router_md_ns_router_url_url_string"><code>ns.router.url(url)</code>: <code>{ string }</code></a></li>
+<li><a href="#ns_router_md_ns_router_generateurl_id_params_string"><code>ns.router.generateUrl(id, params)</code>: <code>{string}</code></a></li>
+<li><a href="#ns_router_md_ns_router_routes_object"><code>ns.router.routes</code>: <code>{object}</code></a></li>
+<li><a href="#ns_router_md_ns_router_regexps_object"><code>ns.router.regexps</code>: <code>{object}</code></a></li>
+</ul>
+</li>
+<li><a href="#ns_router_md">Параметры</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+
+          <div id="apicontent">
+            <h1>ns.router<span><a class="mark" href="#ns_router_md_ns_router" id="ns_router_md_ns_router">#</a></span></h1>
+<p>Умеет:
+- получать из урла - <code>id</code> страницы (layout) и параметры <code>params</code>
+- генерировать url-ы по <code>id</code> страницы и параметрам <code>params</code>
+
+</p>
+<h2>API<span><a class="mark" href="#ns_router_md_api" id="ns_router_md_api">#</a></span></h2>
+<h3><code>ns.router.baseDir</code>: <code>{string}</code><span><a class="mark" href="#ns_router_md_ns_router_basedir_string" id="ns_router_md_ns_router_basedir_string">#</a></span></h3>
+<p>Базовая часть урла (если приложение располагается не в корне сайта.
+
+</p>
+<h3><code>ns.router(url)</code>: <code>{ page:string, params:{object} }</code><span><a class="mark" href="#ns_router_md_ns_router_url_page_string_params_object" id="ns_router_md_ns_router_url_page_string_params_object">#</a></span></h3>
+<p>Выполняет роутинг: вычисляет по <code>url</code> какая это страница <code>page</code> (это <code>id</code> layout-а) и вытаскивает параметры из урла.
+Если в урле были GET параметры - они подклеиваются в итоговый набор <code>params</code>.
+
+</p>
+<p>Когда выполняется роутинг выполняются:
+- (опционально) redirect-ы (получаем новый урл после redirect-а и ещё раз выполняем роутинг)
+- (опционально) rewrite (текущий урл заменяется на прописанный в rewrite-е, параметры подклеиваются в конце как GET параметры)
+- роутинг (ищем первый подходящий шаблон урла, подробнее см. <code>ns.router.routes</code>. Если не удалось заматчится - считаем, что получили страницу с <code>not-found</code>)
+- (опционально) rewrite параметров (при желании, меняем что-то в полученном объекте с параметрами <code>params</code>).
+
+</p>
+<h3><code>ns.router.url(url)</code>: <code>{ string }</code><span><a class="mark" href="#ns_router_md_ns_router_url_url_string" id="ns_router_md_ns_router_url_url_string">#</a></span></h3>
+<p>Генерация урла, когда урл известен и нужно только дописать базовую часть.
+Странный метод, лучше использовать <code>ns.router.generateUrl</code>
+
+</p>
+<h3><code>ns.router.generateUrl(id, params)</code>: <code>{string}</code><span><a class="mark" href="#ns_router_md_ns_router_generateurl_id_params_string" id="ns_router_md_ns_router_generateurl_id_params_string">#</a></span></h3>
+<p>Генерация урла по <code>id</code> страницы (layout) и по набору параметров.
+Это операция, обратная той, которую делает <code>ns.router</code>.
+Умеет разворачивать rewrite-ы (после генерации урла проверяет, есть ли <code>rewrite</code> правила для полученного урла и выполняет их в обратную сторону).
+В случае неуспеха - кидает ошибку.
+
+</p>
+<h3><code>ns.router.routes</code>: <code>{object}</code><span><a class="mark" href="#ns_router_md_ns_router_routes_object" id="ns_router_md_ns_router_routes_object">#</a></span></h3>
+<p>Это объект, в котором нужно указать все урлы, rewrite-ы и redirect-ы.
+Кроме этого поддерживается rewrite параметров.
+
+</p>
+<p><code>redirect</code> - прописываются редиректы. Можно указать шаблон урла, который надо заматчить и можно указать функцию, которая вычисляет, куда делается редирект.
+
+</p>
+<p><code>rewriteUrl</code> - тут указаны урлы (не шаблоны урлов) и можно указать rewrite для конкретного урла на другой конкретный урл.
+
+</p>
+<p><code>route</code> - тут прописано соответствие шаблона урла - странице (layout-у).
+Матчинг урла выполняется сверху вниз. А значит у урла, который выше - больше приоритет.
+Отсюда правило - более общие шаблоны урлов указывать ниже.
+Матчинг выполняется до первого успешного сопоставления.
+Одной и тоже странице может соответствовать несколько шаблонов урлов.
+
+</p>
+<p><code>rewriteParams</code> - для страницы (layout-а) можно указать функцию, в которой произвольным образом поменять <code>params</code>.
+
+</p>
+<pre><code class="js">ns.router.routes = {
+    redirect: {
+        &#39;/&#39;: &#39;/inbox&#39;,
+        &#39;/inbox/old/{int:int}&#39;: &#39;/inbox&#39;,
+        &#39;/inbox/my&#39;: function() {
+            return &#39;/inbox&#39;;
+        },
+        &#39;/inbox/my/{int:int}&#39;: function(params) {
+            return &#39;/inbox/&#39; + params.int;
+        }
+    },
+    rewriteUrl: {
+        &#39;/page1&#39;: &#39;/page/1&#39;
+    },
+    route: {
+        &#39;/inbox&#39;: &#39;messages&#39;,
+        &#39;/message/{mid:int}&#39;: &#39;message&#39;,
+        &#39;/page/prefix{page:int}&#39;: &#39;url-with-prefix&#39;,
+        &#39;/search/{request:any}&#39;: &#39;search&#39;
+    },
+    rewriteParams: {
+        &#39;message&#39;: function(params) {
+            return { id: params.mid };
+        }
+    }
+};</code></pre>
+<h3><code>ns.router.regexps</code>: <code>{object}</code><span><a class="mark" href="#ns_router_md_ns_router_regexps_object" id="ns_router_md_ns_router_regexps_object">#</a></span></h3>
+<p>Тут задаются типы параметров в виде регулярных выражения.
+
+</p>
+<p>Начальный набор такой:
+</p>
+<pre><code class="js">ns.router.regexps = {
+    &#39;id&#39;: &#39;[A-Za-z_][A-Za-z0-9_-]*&#39;,
+    &#39;int&#39;: &#39;[0-9]+&#39;
+};</code></pre>
+<h2>Параметры<span><a class="mark" href="#ns_router_md" id="ns_router_md">#</a></span></h2>
+<p>Параметры в урле задаются в <code>{}</code>, к примеру, <code>/message/{message-id}</code>.
+Параметр может быть как между <code>/</code>-ами, так и в промежутках, к примеру, <code>/archive/{year}-{month}-{day}</code>.
+
+</p>
+<p>Тип указывается после имени параметра и отделяется <code>:</code>: <code>{page:int}</code>.
+Если параметр указан без типа - ему присваивается тип <code>id</code>. Т.е. <code>{message-id}</code> соответствует <code>{message-id:id}</code>.
+
+</p>
+<p>Параметр может быть опциональным.
+В этом случае, слеш перед ним тоже становится опциональным.
+Чтобы указать, что параметр опционален - нужно дописать <code>=</code> или <code>=default</code> после имени параметра (или типа, если он указан),
+примерно так: <code>{page=}</code>, <code>{page=0}</code>, <code>{page:int=}</code> или <code>{page:int=0}</code>.
+Если в исходном урле параметр не задан, но указано дефолтное значение - оно будет в итоговом наборе параметров страницы <code>params</code>.
+
+</p>
+<p>Можно указать фильтр значения параметра.
+В этом случае параметр должен иметь строго указанное значение, только в этом случае урл будет заматчен.
+Чтобы указать фильтр нужно дописать <code>==filter</code> после имени параметра (или типа, если он указан), примерно так: <code>{color==green}</code> или <code>{color:colors==green}</code>.
+
+</p>
+<p><strong>Можно указать либо дефолтное значение, либо фильтр</strong>.
+</p>
+
+          </div>
+        </div>
+    </div>
+    <div id="footer">
+        <a href="http://joyent.com" class="joyent-logo">Joyent</a>
+        <ul class="clearfix">
+            <li><a href="/">Node.js</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/about/">About</a></li>
+            <li><a href="http://npmjs.org/">npm Registry</a></li>
+            <li><a href="http://nodejs.org/api/">Docs</a></li>
+            <li><a href="http://blog.nodejs.org">Blog</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/logos/">Logos</a></li>
+            <li><a href="http://jobs.nodejs.org/">Jobs</a></li>
+            <li><a href="http://twitter.com/nodejs" class="twitter">@nodejs</a></li>
+        </ul>
+
+        <p>Copyright <a href="http://joyent.com/">Joyent, Inc</a>, Node.js is a <a href="/trademark-policy.pdf">trademark</a> of Joyent, Inc. View <a href="https://raw.github.com/joyent/node/v0.10.17/LICENSE">license</a>.</p>
+    </div>
+
+  <script src="../sh_main.js"></script>
+  <script src="../sh_javascript.min.js"></script>
+  <script>highlight(undefined, undefined, 'pre');</script>
+  <script>
+    window._gaq = [['_setAccount', 'UA-10874194-2'], ['_trackPageview']];
+    (function(d, t) {
+      var g = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      g.src = '//www.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g, s);
+    }(document, 'script'));
+  </script>
+</body>
+</html>
+

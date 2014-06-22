@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ns.View Node.js v0.10.17 Manual &amp; Documentation</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/sh.css">
+  <link rel="canonical" href="http://nodejs.org/api/ns.view.md.html">
+</head>
+<body class="alt apidoc" id="api-section-ns.view.md">
+    <div id="intro" class="interior">
+        <a href="/" title="Go back to the home page">
+            <img id="logo" src="http://nodejs.org/images/logo-light.png" alt="node.js">
+        </a>
+    </div>
+    <div id="content" class="clearfix">
+        <div id="column2" class="interior">
+            <ul>
+                <li><a href="/" class="home">Home</a></li>
+                <li><a href="/download/" class="download">Download</a></li>
+                <li><a href="/about/" class="about">About</a></li>
+                <li><a href="http://npmjs.org/" class="npm">npm Registry</a></li>
+                <li><a href="http://nodejs.org/api/" class="docs current">Docs</a></li>
+                <li><a href="http://blog.nodejs.org" class="blog">Blog</a></li>
+                <li><a href="/community/" class="community">Community</a></li>
+                <li><a href="/logos/" class="logos">Logos</a></li>
+                <li><a href="http://jobs.nodejs.org/" class="jobs">Jobs</a></li>
+            </ul>
+            <p class="twitter"><a href="http://twitter.com/nodejs">@nodejs</a></p>
+        </div>
+
+        <div id="column1" class="interior">
+          <header>
+            <h1>Node.js v0.10.17 Manual &amp; Documentation</h1>
+            <div id="gtoc">
+              <p>
+                <a href="index.html" name="toc">Index</a> |
+                <a href="all.html">View on single page</a> |
+                <a href="ns.view.md.json">View as JSON</a>
+              </p>
+            </div>
+            <hr>
+          </header>
+
+          <div id="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+<li><a href="#ns_view_md_ns_view">ns.View</a><ul>
+<li><a href="#ns_view_md">Декларация</a><ul>
+<li><a href="#ns_view_md_ctor">ctor</a></li>
+<li><a href="#ns_view_md_events"><code>events</code></a><ul>
+<li><a href="#ns_view_md_dom">DOM-события</a></li>
+<li><a href="#ns_view_md_noscript">&quot;Космические&quot; события noscript</a></li>
+<li><a href="#ns_view_md_1">Встроенные события</a></li>
+</ul>
+</li>
+<li><a href="#ns_view_md_methods">methods</a></li>
+<li><a href="#ns_view_md_models">models</a></li>
+<li><a href="#ns_view_md_2">Параметры</a><ul>
+<li><a href="#ns_view_md_params">params+</a></li>
+<li><a href="#ns_view_md_params_1">params-</a></li>
+<li><a href="#ns_view_md_params_2">params</a></li>
+</ul>
+</li>
+<li><a href="#ns_view_md_rewriteparamsoninit">rewriteParamsOnInit</a></li>
+</ul>
+</li>
+<li><a href="#ns_view_md_3">Валидность</a></li>
+<li><a href="#ns_view_md_4">Взаимодействие</a></li>
+<li><a href="#ns_view_md_async">async</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+
+          <div id="apicontent">
+            <h1>ns.View<span><a class="mark" href="#ns_view_md_ns_view" id="ns_view_md_ns_view">#</a></span></h1>
+<p>Вид представляет собой элемент интерфейса.
+Он однозначно идентифицируется своим ключом, который строится во время инициализации исходя из <a href="#Параметры">параметров вида</a>.
+Разный ключ всегда означает разный экземпляр вида.
+
+</p>
+<p>Не стоит ожидать, что при изменении параметров будет перерисован тот же самый вид.
+Этого можно достичь, но в общем виде будет создан и отрисован новый экземпляр.
+
+</p>
+<p>Ключ очень важен для работы <code>ns.Box</code>.
+<code>ns.Box</code> при каждом обновлении высчитывает ключи для видов, которые должен показать, скрывает все виды, у которых ключ не совпадает и показывает те, которые надо.
+
+</p>
+<ul>
+<li><a href="#Декларация">Декларация</a><ul>
+<li><a href="#ctor">ctor</a></li>
+<li><a href="#events">events</a><ul>
+<li><a href="#dom-события">DOM-события</a></li>
+<li><a href="#События-noscript">&quot;Космические&quot; события noscript</a></li>
+<li><a href="#Встроенные-события">Встроенные события</a></li>
+</ul>
+</li>
+<li><a href="#methods">methods</a></li>
+<li><a href="#models">models</a></li>
+<li><a href="#Параметры">Параметры</a><ul>
+<li><a href="#params+">params+</a></li>
+<li><a href="#params-">params-</a></li>
+<li><a href="#params">params</a></li>
+<li><a href="#rewriteParamsOnInit">rewriteParamsOnInit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#Валидность">Валидность и перерисовки</a></li>
+<li><a href="#Взаимодействие">Взаимодействие с видом</a></li>
+<li><a href="#async">async</a></li>
+</ul>
+<h2>Декларация<span><a class="mark" href="#ns_view_md" id="ns_view_md">#</a></span></h2>
+<p>Определение нового вида происходит через статическую функцию <code>ns.View.define</code>
+</p>
+<pre><code class="js">ns.View.define(&#39;viewName&#39;, viewDeclObject[, baseView])</code></pre>
+<p>Объект-декларация состоит из следующих свойств.
+
+</p>
+<h3>ctor<span><a class="mark" href="#ns_view_md_ctor" id="ns_view_md_ctor">#</a></span></h3>
+<p><code>ctor</code> - это функция-конструтор. Обратите внимание, что он вызывается самым первым, до инициализации самого вида, т.о. в конструкторе еще не доступеы некоторые свойства.
+
+</p>
+<p>Полностью готовый экземпляр бросает событие <code>ns-view-init</code>.
+
+</p>
+<pre><code>/**
+ * @classdesc prj.vMyView
+ * @augments ns.View
+ */
+ns.View.define(&#39;my-view&#39;, {
+    /**
+     * @constructs prj.vMyView
+     */
+    ctor: function() {
+        this._state = &#39;initial&#39;;
+        this.CONST = 100;
+    }
+});</code></pre>
+<h3><code>events</code><span><a class="mark" href="#ns_view_md_events" id="ns_view_md_events">#</a></span></h3>
+<p><code>events</code> - объект с декларацией подписок на события, как DOM, так и noscript.
+
+</p>
+<p>Любая подписка имеет вид:
+</p>
+<pre><code class="json">{
+    &quot;на что подписаться@когда&quot;: &quot;обработчик&quot;
+}</code></pre>
+<p>Обработчиков может быть названием метода из прототипа или функция. Все обработчики вызываются в контексте вида.
+
+</p>
+<p>События с суффиксом <code>@show</code> вешаются во время показа вида (событие <code>ns-view-show</code>) и снимаются во время скрытия (событие <code>ns-view-hide</code>).
+Аналогично, суффикс <code>@init</code> означает, что событие будет активировано на <code>ns-view-htmlinit</code> и деактивировано на <code>ns-view-htmldestroy</code>.
+
+</p>
+<h4>DOM-события<span><a class="mark" href="#ns_view_md_dom" id="ns_view_md_dom">#</a></span></h4>
+<p>DOM-события от события noscript различаются согласно массиву <code>ns.V.DOM_EVENTS</code>. Все, что не входит в этот массив, является &quot;космическим&quot; событием noscript.
+
+</p>
+<p>DOM-события навешиваются через механизм делегирования.
+
+</p>
+<p>Примеры деклараций:
+</p>
+<pre><code class="js">{
+    // событие click на корневой ноде вида
+    &quot;click&quot;: &quot;onClick&quot;,
+    // событие click на нодах к классом selector внутри вида
+    &quot;click .selector&quot;: &quot;onSelectorClick&quot;,
+    &quot;click@init .selector&quot;: &quot;onInitSelectorClick&quot;
+}</code></pre>
+<h4>&quot;Космические&quot; события noscript<span><a class="mark" href="#ns_view_md_noscript" id="ns_view_md_noscript">#</a></span></h4>
+<p>Декларируются как и остальные события
+</p>
+<pre><code class="js">{
+    &quot;my-custom-event&quot;: &quot;onCustomEvent&quot;,
+    &quot;my-custom-init@init&quot;: &quot;onCustomInit&quot;
+}</code></pre>
+<p>Если не указано когда вешать обработчик, то оно будет навешан при показе вида и снят при скрытии.
+
+</p>
+<p>&quot;Косимческие&quot; события работают через единую шину <code>ns.events</code>
+</p>
+<pre><code class="js">ns.events.trigger(&#39;my-custom-event&#39;);</code></pre>
+<h4>Встроенные события<span><a class="mark" href="#ns_view_md_1" id="ns_view_md_1">#</a></span></h4>
+<p>Список событий:
+<em> <code>ns-view-hide</code> - вида был скрыт и больше не виден на странице
+</em> <code>ns-view-htmldestroy</code> - старая нода у вида была уничтожена
+<em> <code>ns-view-htmlinit</code> - у вида появилась новая нода
+</em> <code>ns-view-async</code> - у async-view появилась заглушка. Это единственное событие, которое генерируется для заглушки async-view
+<em> <code>ns-view-show</code> - view был показан и теперь виден на странице
+</em> <code>ns-view-touch</code> - view виден и был затронут в процессе обновления страницы
+
+</p>
+<ol>
+<li>События генерируются снизу вверх, т.е. сначала их получают дочерние вида, потом родительские.</li>
+<li>События генерируются пачками, т.е. сначала одно событие у всех view, потом другое событие у всех view.</li>
+<li>События генерируются в строго определенном порядке, указанном выше</li>
+</ol>
+<p>Примеры последовательностей событий:
+<em> инициализация view: <code>ns-view-htmlinit -&gt; ns-view-show -&gt; ns-view-touch</code>
+</em> перерисовка страница, если view валиден: <code>ns-view-touch</code>
+<em> view был скрыт: <code>ns-view-hide</code> (без <code>ns-view-touch</code>)
+</em> view был показан: <code>ns-view-show -&gt; ns-view-touch</code>
+* view был перерисован: <code>ns-view-hide -&gt; ns-view-htmldestroy -&gt; ns-view-htmlinit -&gt; ns-view-show -&gt; ns-view-touch</code> (<code>ns-view-hide</code> тут вызывается из тех соображений, что могут быть обработчики, которые вешаются на <code>ns-view-show/ns-view-hide</code> и при обновлении ноды, они должны быть переинициализированы)
+
+</p>
+<h3>methods<span><a class="mark" href="#ns_view_md_methods" id="ns_view_md_methods">#</a></span></h3>
+<p><code>methods</code> - объект с методами вида. По сути является прототипом объекта.
+
+</p>
+<pre><code>/**
+ * @classdesc prj.vMyView
+ * @augments ns.View
+ */
+ns.View.define(&#39;my-view&#39;, {
+    /** @lends prj.vMyView.prototype
+    methods: {
+        BAR: 100
+        foo: function(){}
+    }
+});</code></pre>
+<h3>models<span><a class="mark" href="#ns_view_md_models" id="ns_view_md_models">#</a></span></h3>
+<p><code>models</code> позволяет указать модели, от которых зависит вид. Зависимость означает, что
+1. параметры вида будут собраны на основе параметров связанных моделей
+2. в шаблонах будут доступны вида данные связанных моделей
+3. некоторые методы вида будут подписаны на события связанных моделей
+
+</p>
+<p>По умолчанию вид подписывается на следующие стандартные события модели:
+ - <code>ns-model-changed</code>
+ - <code>ns-model-insert</code>
+ - <code>ns-model-remove</code>
+ - <code>ns-model-destroyed</code>
+и не подписывается на событие <code>ns-model-touched</code>.
+
+</p>
+<p>Если обработчики явно не указаны, то в качестве обработчика стандартных событий устанавливается метод <code>invalidate</code>.
+
+</p>
+<pre><code class="js">ns.View.define(&#39;super-view&#39;, {
+  models: [&#39;album&#39;, &#39;photo&#39;]
+});</code></pre>
+<p>В приведённом примере вид будет инвалидироваться при любом стандартном событии модели.
+
+</p>
+<p>Инвалидировать вид можно так же по любым другим событиям модели. Для этого в декларации нужно явно указать событие и обработчик.
+
+</p>
+<pre><code class="js">ns.View.define(&#39;super-view&#39;, {
+  models: {album: {
+    &#39;ns-model-boof&#39;: &#39;invalidate&#39;
+  }}
+});</code></pre>
+<p>Для того, чтобы предотвратить инвалидацию вида по конекретному событию, в качестве обработчика нужно явно указать метод <code>keepValid</code>.
+
+</p>
+<pre><code class="js">ns.View.define(&#39;super-view&#39;, {
+  models: {album: {
+    `ns-model-changed`: &#39;keepValid&#39;
+  }}
+});</code></pre>
+<p>В приведённом примере при наступлении события ns-model-changed вид будет оставаться валидным и не будет перерисован при последующих update&#39;ах. При любом другом стандартном событии модели он будет проинвалидирован.
+
+</p>
+<p>Для того, чтобы предотвратить инвалидацию вида по любому событию, <code>keepValid</code> нужно установить значением поля модели.
+
+
+</p>
+<pre><code class="js">ns.View.define(&#39;super-view&#39;, {
+  models: {album: &#39;keepValid&#39;}
+});</code></pre>
+<p>В приведённом примере события модели <code>album</code> не будут влиять на валидность вида.
+
+</p>
+<p><code>&#39;invalidate&#39; и &#39;keepValid&#39;</code> - это имена реальных методов. Вместо них можно указать имя любого другого метода вида.
+
+</p>
+<p>Если нужно в качестве обработчика события использовать произвольный метод, и при этом инвалидировать вид, достаточно внутри метода вызвать <code>this.invalidate();</code>.
+
+</p>
+<p>Для краткости вместо методов <code>invalidate</code> и <code>keepValid</code> можно указывать их краткую форму: <code>true</code> и <code>false</code> соответственно. 2 варианта деклараций в следующем примере работают одинаково.
+
+
+</p>
+<pre><code class="js">ns.View.define(&#39;super-view&#39;, {
+  models: {
+    photo: &#39;invalidate&#39;,
+    album: &#39;keepValid&#39;
+  }
+});
+
+ns.View.define(&#39;super-view&#39;, {
+  models: {
+    photo: true,
+    album: false
+  }
+});</code></pre>
+<p>Для большей краткости зависимости от моделей можно указывать в виде массива. Это будет эквивалентно указанию в качестве обработчика их событий метода <code>invalidate</code>.
+
+</p>
+<pre><code class="js">ns.View.define(&#39;super-view&#39;, {
+  models: [&#39;photo&#39;, &#39;album&#39;]
+});</code></pre>
+<h3>Параметры<span><a class="mark" href="#ns_view_md_2" id="ns_view_md_2">#</a></span></h3>
+<p>Параметры нужны для построения ключа.
+
+</p>
+<p>По умолчанию, если <code>params</code> не указан, то параметры собираются из параметров всех моделей в порядке их объявления.
+Добавлять или удалять из собранных параметров моделей можно с помощью объектов <code>params+</code> и <code>params-</code>
+
+</p>
+<p>Если <code>params</code> явно заданы — нельзя использовать <code>params+</code> / <code>params-</code>.
+
+</p>
+<p>Если ключ view нельзя построить бросается <strong>исключение</strong>.
+
+</p>
+<h4>params+<span><a class="mark" href="#ns_view_md_params" id="ns_view_md_params">#</a></span></h4>
+<p>Добавляет в результирующий набор дополнительные параметры:
+</p>
+<pre><code class="js">ns.View.define(&#39;super-view&#39;, {
+  &quot;models&quot;: [ &#39;album&#39;, &#39;photo&#39; ],
+  &quot;params+&quot;: { page: 23 }
+});</code></pre>
+<h4>params-<span><a class="mark" href="#ns_view_md_params_1" id="ns_view_md_params_1">#</a></span></h4>
+<p>Удаляет из результирующего набора указанные параметры:
+</p>
+<pre><code class="js">ns.View.define(&#39;super-view&#39;, {
+  &quot;models&quot;: [ &#39;album&#39;, &#39;photo&#39; ],
+  &quot;params-&quot;: [ &#39;album-id&#39; ]
+});</code></pre>
+<h4>params<span><a class="mark" href="#ns_view_md_params_2" id="ns_view_md_params_2">#</a></span></h4>
+<p><code>params</code> может быть массивов объектов или функцией.
+Также можно указать объект - это короткая запись массива с одним элементом.
+
+</p>
+<p>Каждый объект представляет собой группу параметров.
+Это позволяет строить ключ по-разному в зависимости от набора.
+</p>
+<pre><code class="js">ns.View.define(&#39;super-view&#39;, {
+  params: [
+    { &quot;context&quot;: &quot;album&quot;, &quot;album-id&quot;: null },
+    { &quot;context&quot;: null }
+  ]
+});</code></pre>
+<p>Как строится ключ:
+- каждое свойство объекта — это обязательный параметр
+- если значение свойства <code>null</code> — параметр обязателен, но значение его может быть любым
+- если значение свойства не <code>null</code> — это <strong>фильтр</strong>, параметр из урла должен иметь именно это значение
+- если есть все нужные параметры и выполняются все фильтры — ключ можно строить
+- иначе — пытаемся строить по следующей группе параметров
+
+</p>
+<p>Т.о. при использовании <code>params</code> все параметры являются обязательными.
+Чтобы сделать их необязательными, используйте <code>params+</code>.
+
+</p>
+<p>Если указана функция, то она строит ключ сама на основе переданных параметров.
+</p>
+<pre><code class="js">ns.View.define(&#39;view&#39;, {
+  // ns.key - готовая функция для склеивания параметров в строку
+  params: ns.key
+})</code></pre>
+<h3>rewriteParamsOnInit<span><a class="mark" href="#ns_view_md_rewriteparamsoninit" id="ns_view_md_rewriteparamsoninit">#</a></span></h3>
+<p>При декларации вида можно объявить специальную функцию для обработки параметров.
+Аргументом функции приходят параметры страницы, а функция должна вернуть обработанные параметры.
+
+</p>
+<p>Примеры использования:
+ - вид зависит не от параметров страницы, а от названия <code>layout</code>
+ - в параметры необходимо добавить какое-то фиксированное значение
+
+</p>
+<pre><code>ns.View.define(&#39;my-view&#39;, {
+    rewriteParamsOnInit: function(params) {
+        return {
+            layout: ns.page.current.page 
+        }
+    }
+});</code></pre>
+<h2>Валидность<span><a class="mark" href="#ns_view_md_3" id="ns_view_md_3">#</a></span></h2>
+<p>Валидность view считается по двум факторам:
+- собственный статус <code>ns.V.STATUS</code>
+- статус привязанных моделей
+
+</p>
+<p>При отрисовке вид запоминает все версии моделей и в дальшейшем сравнимает их. Если версия изменилась, то вид будет перерисован.
+
+</p>
+<p>Также у вида есть собственный статус <code>this.static</code> значением, которого может быть тип ns.V.STATUS. Если статус не <code>ns.V.STATUS.OK</code>, то вид будет перерисован.
+
+</p>
+<p>Инвалидировать вид можно методом <code>this.invalidate()</code>.
+
+</p>
+<p>Вид безусловно подписывается на все изменения моделей и автоматически инвалидирует себя при изменениях.
+
+</p>
+<h2>Взаимодействие<span><a class="mark" href="#ns_view_md_4" id="ns_view_md_4">#</a></span></h2>
+<p>В noscript нет какого-либо способа получить созданный экземпляр вида.
+Поэтому любое внешнее взаимодействие с ним осуществляется исключительно через механизм <a href="#События-noscript">событий noscript</a>
+
+</p>
+<h2>async<span><a class="mark" href="#ns_view_md_async" id="ns_view_md_async">#</a></span></h2>
+<p>Вид может быть &quot;асинхронным&quot;. Такое поведение полезно, когда некоторые модели могут запрашиваться с сервера продолжительное время.
+
+</p>
+<p>Схема работы:
+ 1. Если у вида есть все необходимые данные (все модели валидны) для отрисовки, то он отрисуется в общем потоке.
+ 2. Если модели не валидны, то сначала отрисуется заглушка - мода <code>ns-view-async-content</code>, где будут доступны все валидные на данный момент данные, и сделан запрос за остальными моделями. У вида будет вызвано событие <code>ns-view-async</code>.
+ 3. После получения данных вид будет перерисован с обычной модой <code>ns-view-content</code> и поведет себя как обычно
+</p>
+
+          </div>
+        </div>
+    </div>
+    <div id="footer">
+        <a href="http://joyent.com" class="joyent-logo">Joyent</a>
+        <ul class="clearfix">
+            <li><a href="/">Node.js</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/about/">About</a></li>
+            <li><a href="http://npmjs.org/">npm Registry</a></li>
+            <li><a href="http://nodejs.org/api/">Docs</a></li>
+            <li><a href="http://blog.nodejs.org">Blog</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/logos/">Logos</a></li>
+            <li><a href="http://jobs.nodejs.org/">Jobs</a></li>
+            <li><a href="http://twitter.com/nodejs" class="twitter">@nodejs</a></li>
+        </ul>
+
+        <p>Copyright <a href="http://joyent.com/">Joyent, Inc</a>, Node.js is a <a href="/trademark-policy.pdf">trademark</a> of Joyent, Inc. View <a href="https://raw.github.com/joyent/node/v0.10.17/LICENSE">license</a>.</p>
+    </div>
+
+  <script src="../sh_main.js"></script>
+  <script src="../sh_javascript.min.js"></script>
+  <script>highlight(undefined, undefined, 'pre');</script>
+  <script>
+    window._gaq = [['_setAccount', 'UA-10874194-2'], ['_trackPageview']];
+    (function(d, t) {
+      var g = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      g.src = '//www.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g, s);
+    }(document, 'script'));
+  </script>
+</body>
+</html>
+

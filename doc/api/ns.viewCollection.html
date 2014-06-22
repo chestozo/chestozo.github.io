@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ns.ViewCollection Node.js v0.10.17 Manual &amp; Documentation</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/sh.css">
+  <link rel="canonical" href="http://nodejs.org/api/ns.viewCollection.md.html">
+</head>
+<body class="alt apidoc" id="api-section-ns.viewCollection.md">
+    <div id="intro" class="interior">
+        <a href="/" title="Go back to the home page">
+            <img id="logo" src="http://nodejs.org/images/logo-light.png" alt="node.js">
+        </a>
+    </div>
+    <div id="content" class="clearfix">
+        <div id="column2" class="interior">
+            <ul>
+                <li><a href="/" class="home">Home</a></li>
+                <li><a href="/download/" class="download">Download</a></li>
+                <li><a href="/about/" class="about">About</a></li>
+                <li><a href="http://npmjs.org/" class="npm">npm Registry</a></li>
+                <li><a href="http://nodejs.org/api/" class="docs current">Docs</a></li>
+                <li><a href="http://blog.nodejs.org" class="blog">Blog</a></li>
+                <li><a href="/community/" class="community">Community</a></li>
+                <li><a href="/logos/" class="logos">Logos</a></li>
+                <li><a href="http://jobs.nodejs.org/" class="jobs">Jobs</a></li>
+            </ul>
+            <p class="twitter"><a href="http://twitter.com/nodejs">@nodejs</a></p>
+        </div>
+
+        <div id="column1" class="interior">
+          <header>
+            <h1>Node.js v0.10.17 Manual &amp; Documentation</h1>
+            <div id="gtoc">
+              <p>
+                <a href="index.html" name="toc">Index</a> |
+                <a href="all.html">View on single page</a> |
+                <a href="ns.viewCollection.md.json">View as JSON</a>
+              </p>
+            </div>
+            <hr>
+          </header>
+
+          <div id="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+<li><a href="#ns_viewcollection_md_ns_viewcollection">ns.ViewCollection</a><ul>
+<li><a href="#ns_viewcollection_md">Декларация</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+
+          <div id="apicontent">
+            <h1>ns.ViewCollection<span><a class="mark" href="#ns_viewcollection_md_ns_viewcollection" id="ns_viewcollection_md_ns_viewcollection">#</a></span></h1>
+<p><code>ViewCollection</code> - это коллеция <code>ns.View</code>, привязанная к <code>ns.ModelCollection</code>.
+При изменении коллекции позволяет перерисовывать только изменившиеся элементы.
+
+</p>
+<p>По сути, образуется следующая зависимость один-к-одному:
+</p>
+<pre><code>ViewCollection      -&gt;  ModelCollection
+    view-item-1     -&gt;      model-item-1
+    view-item-2     -&gt;      model-item-2
+                    ...
+    view-item-N     -&gt;      model-item-N</code></pre>
+<p><code>ns.ViewCollection</code> может зависит только от одной <code>ns.ModelCollection</code>.
+
+</p>
+<p><code>ns.ViewCollection</code> может содержать внутренние виды и иметь собственную html-разметку.
+
+</p>
+<h2>Декларация<span><a class="mark" href="#ns_viewcollection_md" id="ns_viewcollection_md">#</a></span></h2>
+<pre><code class="js">ns.ViewCollection.define(&#39;my-view-collection&#39;, {
+    models: [ &#39;my-model-collection&#39; ],
+    split: {
+        view_id: &#39;my-view-collection-item&#39;
+    }
+});</code></pre>
+<p>Опция <code>split.view_id</code> определяет из каких <code>ns.View</code> состоит коллекция.
+
+</p>
+<p>Опция <code>models</code>, как и в ns.View определяет зависимость от моделей и подписки на их события.
+По умолчанию ViewCollection делает следующие подписки:
+ - обработчиком собственных событий <code>ns-model-changed</code> и <code>ns-model-destroyed</code> любых моделей устанавливается <code>invalidate</code>. Эти события наступают при изменении данных, по которым рисуется собственная html-разметка viewCollection&#39;а, поэтому вид по умолчанию становится невалидным, чтобы перерисоваться.
+ - обработчиком <code>ns-model-insert</code> и <code>ns-model-remove</code> модели-коллекции устанавливается <code>keepValid</code>. Эти события наступают при изменении состава модели-коллекции, по которой рисуются вложенные виды viewCollection&#39;а. Собственная html-разметка при этом не затрагивается, поэтому вид по умолчанию остаётся валидным.
+События моделей, вложенных в коллекцию игнорируются и подписаться на них через декларацию нельзя.
+
+
+</p>
+<p>Декларация элемента <code>ns.ViewCollection</code> выглядит так:
+</p>
+<pre><code class="js">ns.View.define(&#39;my-view-collection-item&#39;, {
+    models: [ &#39;my-model-collection-item&#39; ]
+});</code></pre>
+<p>Элемент коллекции ведет себя как обычный <code>ns.View</code> и ничего не знает про коллекцию.
+
+</p>
+<p>Элементы коллекции помещаются в узел-контейнер, размеченный классом <code>ns-view-container-desc</code>.
+Узел-контейнер <strong>обязательно</strong> должен быть указан. Вне этого контейнера можно делать собcтвенную html-разметку.
+</p>
+
+          </div>
+        </div>
+    </div>
+    <div id="footer">
+        <a href="http://joyent.com" class="joyent-logo">Joyent</a>
+        <ul class="clearfix">
+            <li><a href="/">Node.js</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/about/">About</a></li>
+            <li><a href="http://npmjs.org/">npm Registry</a></li>
+            <li><a href="http://nodejs.org/api/">Docs</a></li>
+            <li><a href="http://blog.nodejs.org">Blog</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/logos/">Logos</a></li>
+            <li><a href="http://jobs.nodejs.org/">Jobs</a></li>
+            <li><a href="http://twitter.com/nodejs" class="twitter">@nodejs</a></li>
+        </ul>
+
+        <p>Copyright <a href="http://joyent.com/">Joyent, Inc</a>, Node.js is a <a href="/trademark-policy.pdf">trademark</a> of Joyent, Inc. View <a href="https://raw.github.com/joyent/node/v0.10.17/LICENSE">license</a>.</p>
+    </div>
+
+  <script src="../sh_main.js"></script>
+  <script src="../sh_javascript.min.js"></script>
+  <script>highlight(undefined, undefined, 'pre');</script>
+  <script>
+    window._gaq = [['_setAccount', 'UA-10874194-2'], ['_trackPageview']];
+    (function(d, t) {
+      var g = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      g.src = '//www.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g, s);
+    }(document, 'script'));
+  </script>
+</body>
+</html>
+
